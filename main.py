@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import sys
 import pygame
-import Ai
+from Ai import Ai
 from PySide6.QtWidgets import QApplication, QWidget,QComboBox
 from PySide6.QtCore import QTimer
 
@@ -26,7 +26,8 @@ class Game:
     def __init__(self):
         pygame.init()
         self.gameInit()
-        self.ai = Ai
+        self.ai = Ai()
+
         self.timer = Timer()
         self.width= 1000 / 8
         self.height = 720 / 8
@@ -37,7 +38,6 @@ class Game:
     def loop(self):
         self.timer.update()
         dt = self.timer.get_deltaTime()
-        print(self.state)
         self.process_input()
         self.gameLogic(dt)
         self.render()
@@ -56,6 +56,10 @@ class Game:
                     self.up_key_pressed = False
                 if event.key == pygame.K_s:
                     self.down_key_pressed = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pygame.mouse.get_pressed()[0]:
+                     self.ai.target = pygame.mouse.get_pos()
+                     print(self.ai.target)
 
     def gameInit(self):
         self.size = self.width, self.height = 1000, 720
@@ -64,11 +68,12 @@ class Game:
         self.screen = pygame.display.set_mode(self.size)
 
     def gameLogic(self, dt):
-        #ai behaviour
+        self.ai.behaviour(self.state, dt)
         pass
 
     def render(self):
         self.screen.fill(self.black)
+        self.ai.Render(self.screen)
         pygame.display.flip()
 
 class Window(QWidget):
@@ -104,7 +109,6 @@ class Window(QWidget):
         self.show()
 
     def activated(self, index):
-        print("Current state : ", index)
         self.game.state = index
 
 
