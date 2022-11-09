@@ -5,43 +5,42 @@ import time
 
 class Ai:
     velocity:float
-    pos_agent = pygame.Vector2()
+    pos_agent:pygame.Rect = None
     target = pygame.Vector2()
     vitesse_max:float
     vitesse_min:float
     initMovement:bool
     curr_time:float
+    initTime = None
+    atDestination = False
 
     def __init__(self):
         self.image = "./assets/PNG/Survivor 1/survivor1_hold.png"
         self.img = pygame.image.load(self.image)
-        self.vitesse_max = 10
+        self.vitesse_max = 15
         self.vitesse_min = 2
+        self.pos_agent = self.img.get_rect()
         pass
 
 
     def Seek(self, delta_time):
-        #velocity = destination - pos_agent
-        #vector2.normalize * vitesse_max
-        #math.min(velocity, minSpeed)
-        #if initMovement :
-            #lerp(initialVelocity,velocity,curr_time)
-        #velocity *= delta_time
-        #agent.move(velocity)
+        #if (time.time() - self.initTime) / 5 >= 1:
+            #self.atDestination = True
+        if self.atDestination == False:
+            self.velocity = self.target -  pygame.Vector2(self.pos_agent.x,self.pos_agent.y)
+            if self.vitesse_max == self.velocity.length():
+                self.initTime = None
+                self.atDestination = True
+                print(self.atDestination)
+            if self.velocity.length() > self.vitesse_max:
+                self.velocity = self.velocity.normalize() * self.vitesse_max
+            if self.initMovement() and self.vitesse_max > self.velocity.length():
+                self.initTime = time.time()
+            if self.initTime != None:
+                self.velocity = pygame.math.Vector2.lerp(pygame.Vector2(0,0), self.velocity, (time.time() - self.initTime) / 5)
 
-
-        self.velocity = self.target -  self.pos_agent
-        self.initialVelocity = self.velocity
-        #self.pos_agent.normalize * self.vitesse_max
-        #pygame.math.clamp(self.velocity, self.vitesse_min ,self.vitesse_max)
-        if self.velocity.length() > self.vitesse_max:
-            self.velocity = self.velocity.normalize() * self.vitesse_max
-        if self.initMovement():
-            #(1 - time.ctime) * self.initialVelocity + time.ctime *self.velocity
-                                                    #ler(Vector2, float)
-            self.velocity = pygame.math.Vector2.lerp(self.pos_agent, self.velocity, delta_time)
-        self.Move(self.velocity)
-        pass
+            self.pos_agent = self.pos_agent.move(self.velocity)
+            pass
 
     def Flee(self, delta_time):
         #velocity = pos_agent - destination
@@ -67,12 +66,8 @@ class Ai:
             #(x,y) = (cos0, sin0)
         pass
 
-    def Move(self, velocity):
-        self.pos_agent.x = velocity.x
-        self.pos_agent.y = velocity.y
-        pass
-
     def Render(self, screen):
+        print(self.pos_agent)
         screen.blit(self.img, self.pos_agent)
 
     def behaviour(self, mode, dt):
@@ -84,7 +79,7 @@ class Ai:
             self.Wander(dt)
 
     def initMovement(self):
-            return True
+            return self.initTime == None
 
 
 

@@ -59,6 +59,8 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                      self.ai.target = pygame.mouse.get_pos()
+                     self.ai.atDestination = False
+                     print(self.ai.atDestination)
                      print(self.ai.target)
 
     def gameInit(self):
