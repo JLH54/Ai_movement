@@ -38,9 +38,9 @@ class Ai:
             self.velocity = self.velocity.normalize() * self.vitesse_max
         if self.initMovement():
             #(1 - time.ctime) * self.initialVelocity + time.ctime *self.velocity
-            self.velocity = pygame.math.Vector2.lerp(self.velocity, time.ctime)
-        self.velocity += delta_time
-        self.move(self.velocity)
+                                                    #ler(Vector2, float)
+            self.velocity = pygame.math.Vector2.lerp(self.pos_agent, self.velocity, delta_time)
+        self.Move(self.velocity)
         pass
 
     def Flee(self, delta_time):
@@ -68,18 +68,20 @@ class Ai:
         pass
 
     def Move(self, velocity):
+        self.pos_agent.x = velocity.x
+        self.pos_agent.y = velocity.y
         pass
 
     def Render(self, screen):
         screen.blit(self.img, self.pos_agent)
 
-    def behaviour(self, mode, time):
+    def behaviour(self, mode, dt):
         if(mode == 0):
-            self.Seek(time)
+            self.Seek(dt)
         if(mode == 1):
-            self.Flee(time)
+            self.Flee(dt)
         else:
-            self.wander(time)
+            self.Wander(dt)
 
     def initMovement(self):
             return True
